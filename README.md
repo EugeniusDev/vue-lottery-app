@@ -1,0 +1,6 @@
+ambatukam ooooh
+ambadeblou dooohh
+ambussing
+ambatunat
+omagut
+ambatukaaam
