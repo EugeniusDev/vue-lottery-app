@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LuckyGamblersList from "@/components/LuckyGamblersList.vue";
-import GamplerRegistrationForm from "@/components/NewGamblerForm.vue";
+import NewGamblerForm from "@/components/NewGamblerForm.vue";
 import AllGamblersList from "@/components/AllGamblersList.vue";
 import {ref} from "vue";
 import type {Gambler} from "@/gambler";
@@ -63,7 +63,7 @@ const addNewWinner = () => {
   <div class="w-75 m-auto">
     <LuckyGamblersList :users-count="gamblers.length" @deleteLucker="deleteWinner" :luckers="luckyGamblers"
                  @newLucker="addNewWinner"></LuckyGamblersList>
-    <GamplerRegistrationForm @addGambler="addGambler"></GamplerRegistrationForm>
+    <NewGamblerForm @addGambler="addGambler"></NewGamblerForm>
     <AllGamblersList :gamblers="gamblers"></AllGamblersList>
   </div>
 </template>
