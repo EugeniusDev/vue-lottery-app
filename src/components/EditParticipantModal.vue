@@ -6,6 +6,7 @@
           :gambler="editedGambler"
           @submit="updateGambler"
           submitButtonText="Update"
+          form-title="Editing form"
       />
     </template>
   </Modal>

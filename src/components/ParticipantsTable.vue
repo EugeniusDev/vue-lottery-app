@@ -49,8 +49,12 @@
         <td>{{ gambler.dateOfBirth }}</td>
         <td>{{ gambler.phoneNumber }}</td>
         <td>
-          <button class="btn btn-sm btn-primary me-2" @click="$emit('edit-gambler', gambler)">Edit</button>
-          <button class="btn btn-sm btn-danger" @click="$emit('delete-gambler', gambler)">Delete</button>
+          <AppButton size="sm" variant="primary" @click="$emit('edit-gambler', gambler)">
+            Edit
+          </AppButton>
+          <AppButton size="sm" variant="danger" @click="$emit('delete-gambler', gambler)">
+            Delete
+          </AppButton>
         </td>
       </tr>
       </tbody>
@@ -61,12 +65,28 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { Gambler } from '@/gambler';
+import AppButton from "@/components/AppButton.vue";
 
 const props = defineProps<{
   gamblers: Gambler[]
 }>();
 
-const emit = defineEmits(['edit-gambler', 'delete-gambler']);
+const emit = defineEmits({
+  'edit-gambler': (gambler: Gambler) => {
+    if (!gambler.email || !gambler.name || !gambler.dateOfBirth || !gambler.phoneNumber) {
+      console.error('Invalid gambler data for editing');
+      return false;
+    }
+    return true;
+  },
+  'delete-gambler': (gambler: Gambler) => {
+    if (!gambler.email) {
+      console.error('Invalid gambler data for deletion');
+      return false;
+    }
+    return true;
+  }
+});
 
 const sortField = ref('');
 const sortDirection = ref('asc');

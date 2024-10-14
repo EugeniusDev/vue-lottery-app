@@ -12,13 +12,14 @@
       </div>
     </div>
     <div class="w-25 d-flex justify-content-center align-items-center">
-      <Button
+      <AppButton
           :disabled="winners.length === 3 || usersCount === 0"
           buttonClass="btn btn-primary"
+          size="lg"
           @click="$emit('new-winner')"
       >
         New Winner
-      </Button>
+      </AppButton>
     </div>
   </div>
 </template>
@@ -26,7 +27,7 @@
 <script setup lang="ts">
 import type { Gambler } from '@/gambler';
 import Winner from './Winner.vue';
-import Button from './Button.vue';
+import AppButton from "@/components/AppButton.vue";
 
 defineProps<{
   winners: Gambler[];

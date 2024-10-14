@@ -4,8 +4,12 @@
     <template #body>
       <p>Are you sure you want to delete participant "{{ gambler.name }}", "{{ gambler.email }}"?</p>
       <div class="d-flex justify-content-end">
-        <Button buttonClass="btn btn-danger me-2" @click="confirmDelete">Yes</Button>
-        <Button buttonClass="btn btn-secondary" @click="closeModal">No</Button>
+        <AppButton variant="danger" size="md" @click="confirmDelete">
+          Yes
+        </AppButton>
+        <AppButton variant="info" outline size="sm" @click="closeModal">
+          No
+        </AppButton>
       </div>
     </template>
   </Modal>
@@ -15,7 +19,7 @@
 import { ref } from 'vue';
 import type { Gambler } from '@/gambler';
 import Modal from './Modal.vue';
-import Button from './Button.vue';
+import AppButton from "@/components/AppButton.vue";
 
 const props = defineProps<{
   gambler: Gambler

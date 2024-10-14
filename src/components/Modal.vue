@@ -14,7 +14,9 @@
         </div>
         <div class="modal-footer">
           <slot name="footer">
-            <button type="button" class="btn btn-secondary" @click="close">Close</button>
+            <AppButton variant="secondary" outline size="md" @click="close">
+              Close
+            </AppButton>
           </slot>
         </div>
       </div>
@@ -24,6 +26,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import AppButton from "@/components/AppButton.vue";
 
 const emit = defineEmits(['close']);
 const modalRef = ref<HTMLElement | null>(null);

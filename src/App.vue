@@ -9,6 +9,7 @@
     <RegistrationForm
         @add-gambler="addGambler"
         submitButtonText="Save"
+        form-title="Registration form"
     />
     <SearchBar @filter-by-name="filterGamblers" />
     <ParticipantsTable

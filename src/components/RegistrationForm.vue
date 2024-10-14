@@ -1,7 +1,7 @@
 <template>
   <div class="pe-5 ps-5 pb-3 pt-3 rounded bg-white">
     <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="needs-validation" novalidate>
-      <h2 class="fw-bold text-uppercase">Editing form</h2>
+      <h2 class="fw-bold text-uppercase">{{formTitle}}</h2>
       <p class="text-grey">Please fill in all the fields</p>
 
       <InputField
@@ -53,9 +53,9 @@
       />
 
       <div class="d-flex justify-content-end">
-        <Button buttonClass="btn btn-primary" type="submit">
+        <AppButton variant="success" size="lg" block type="submit">
           {{ submitButtonText }}
-        </Button>
+        </AppButton>
       </div>
     </form>
 
@@ -67,15 +67,31 @@
 import { ref, computed } from 'vue';
 import type { Gambler } from '@/gambler';
 import InputField from './InputField.vue';
-import Button from './Button.vue';
 import ErrorMessage from './ErrorMessage.vue';
+import AppButton from "@/components/AppButton.vue";
 
 const props = defineProps<{
   gambler?: Gambler;
   submitButtonText?: string;
+  formTitle?: string;
 }>();
 
-const emit = defineEmits(['add-gambler', 'update-gambler']);
+const emit = defineEmits({
+  'add-gambler': (gambler: Gambler) => {
+    if (!gambler.email || !gambler.name || !gambler.dateOfBirth || !gambler.phoneNumber) {
+      console.error('Invalid gambler data');
+      return false;
+    }
+    return true;
+  },
+  'update-gambler': (gambler: Gambler) => {
+    if (!gambler.email || !gambler.name || !gambler.dateOfBirth || !gambler.phoneNumber) {
+      console.error('Invalid gambler data');
+      return false;
+    }
+    return true;
+  }
+});
 
 const gambler = ref<Gambler>(props.gambler || {
   email: '',
