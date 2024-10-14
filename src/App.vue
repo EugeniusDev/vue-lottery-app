@@ -1,73 +1,132 @@
-<script setup lang="ts">
-import LuckyGamblersList from "@/components/LuckyGamblersList.vue";
-import NewGamblerForm from "@/components/NewGamblerForm.vue";
-import AllGamblersList from "@/components/AllGamblersList.vue";
-import {ref} from "vue";
-import type {Gambler} from "@/gambler";
+<template>
+  <div class="w-75 m-auto">
+    <WinnersList
+        :winners="luckyGamblers"
+        :users-count="gamblers.length"
+        @delete-winner="deleteWinner"
+        @new-winner="addNewWinner"
+    />
+    <RegistrationForm
+        @add-gambler="addGambler"
+        submitButtonText="Save"
+    />
+    <SearchBar @filter-by-name="filterGamblers" />
+    <ParticipantsTable
+        :gamblers="filteredGamblers"
+        @edit-gambler="editGambler"
+        @delete-gambler="deleteGambler"
+    />
+    <ErrorMessage :message="errorMessage" />
+    <EditParticipantModal
+        v-if="editingGambler"
+        :gambler="editingGambler"
+        @update="updateGambler"
+        @close="closeEditModal"
+    />
+    <DeleteParticipantModal
+        v-if="deletingGambler"
+        :gambler="deletingGambler"
+        @delete="confirmDeleteGambler"
+        @close="closeDeleteModal"
+    />
+  </div>
+</template>
 
-const gamblers = ref<Gambler[]>([
-  {
-    email: "andriy.kryvchuk@gmail.com",
-    name: "Andriy Kryvchuk",
-    phoneNumber: "+380939876543",
-    dateOfBirth: new Date(1993, 2, 12)
-  },
-  {
-    email: "maria.bondarenko@gmail.com",
-    name: "Maria Bondarenko",
-    phoneNumber: "+380991234567",
-    dateOfBirth: new Date(1998, 6, 28)
-  },
-  {
-    email: "volodymyr.kostenko@gmail.com",
-    name: "Volodymyr Kostenko",
-    phoneNumber: "+380931122334",
-    dateOfBirth: new Date(1987, 9, 11)
-  },
-  {
-    email: "kateryna.pavlenko@gmail.com",
-    name: "Kateryna Pavlenko",
-    phoneNumber: "+380955678912",
-    dateOfBirth: new Date(1994, 11, 3)
-  },
-  {
-    email: "yaroslav.danylyuk@gmail.com",
-    name: "Yaroslav Danylyuk",
-    phoneNumber: "+380973456789",
-    dateOfBirth: new Date(1990, 0, 17)
-  }
-]);
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import type { Gambler } from '@/gambler';
+import WinnersList from '@/components/WinnersList.vue';
+import RegistrationForm from '@/components/RegistrationForm.vue';
+import SearchBar from '@/components/SearchBar.vue';
+import ParticipantsTable from '@/components/ParticipantsTable.vue';
+import ErrorMessage from '@/components/ErrorMessage.vue';
+import EditParticipantModal from '@/components/EditParticipantModal.vue';
+import DeleteParticipantModal from '@/components/DeleteParticipantModal.vue';
+
+const gamblers = ref<Gambler[]>([]);
 const luckyGamblers = ref<Gambler[]>([]);
+const searchTerm = ref('');
+const errorMessage = ref('');
+const editingGambler = ref<Gambler | null>(null);
+const deletingGambler = ref<Gambler | null>(null);
+
+onMounted(() => {
+  const storedGamblers = localStorage.getItem('gamblers');
+  if (storedGamblers) {
+    gamblers.value = JSON.parse(storedGamblers);
+  }
+});
+
+watch(gamblers, (newGamblers) => {
+  localStorage.setItem('gamblers', JSON.stringify(newGamblers));
+}, { deep: true });
+
+const filteredGamblers = computed(() => {
+  return gamblers.value.filter(gambler =>
+      gambler.name.toLowerCase().includes(searchTerm.value.toLowerCase())
+  );
+});
 
 const addGambler = (gambler: Gambler) => {
+  if (gamblers.value.some(g => g.email === gambler.email)) {
+    errorMessage.value = 'A participant with this email already exists.';
+    return;
+  }
   gamblers.value.push(gambler);
-}
+  errorMessage.value = '';
+};
+
 const deleteWinner = (gambler: Gambler) => {
   luckyGamblers.value = luckyGamblers.value.filter(x => x.email !== gambler.email);
-}
+};
 
 const addNewWinner = () => {
-  if (luckyGamblers.value.length > 3) {
+  if (luckyGamblers.value.length >= 3 || gamblers.value.length === 0) {
     return;
   }
   const randomIndex = Math.floor(Math.random() * gamblers.value.length);
   const lucker = gamblers.value[randomIndex];
-  if (luckyGamblers.value.filter(w => w.email === lucker.email).length > 0) {
+  if (luckyGamblers.value.some(w => w.email === lucker.email)) {
     return;
   }
   luckyGamblers.value.push(lucker);
-}
+};
+
+const filterGamblers = (term: string) => {
+  searchTerm.value = term;
+};
+
+const editGambler = (gambler: Gambler) => {
+  editingGambler.value = { ...gambler };
+};
+
+const updateGambler = (updatedGambler: Gambler) => {
+  const index = gamblers.value.findIndex(g => g.email === updatedGambler.email);
+  if (index !== -1) {
+    gamblers.value[index] = updatedGambler;
+  }
+  closeEditModal();
+};
+
+const closeEditModal = () => {
+  editingGambler.value = null;
+};
+
+const deleteGambler = (gambler: Gambler) => {
+  deletingGambler.value = gambler;
+};
+
+const confirmDeleteGambler = (gambler: Gambler) => {
+  gamblers.value = gamblers.value.filter(g => g.email !== gambler.email);
+  luckyGamblers.value = luckyGamblers.value.filter(g => g.email !== gambler.email);
+  closeDeleteModal();
+};
+
+const closeDeleteModal = () => {
+  deletingGambler.value = null;
+};
 </script>
 
-<template>
-  <div class="w-75 m-auto">
-    <LuckyGamblersList :users-count="gamblers.length" @deleteLucker="deleteWinner" :luckers="luckyGamblers"
-                 @newLucker="addNewWinner"></LuckyGamblersList>
-    <NewGamblerForm @addGambler="addGambler"></NewGamblerForm>
-    <AllGamblersList :gamblers="gamblers"></AllGamblersList>
-  </div>
-</template>
-
-<style scoped>
+<style lang="scss" scoped>
 
 </style>
